@@ -4,13 +4,8 @@ package api
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
-
+	"log"
+	
 	"github.com/joho/godotenv"
 )
 
@@ -18,54 +13,53 @@ type AuthService interface {
 	Auth(ctx context.Context, username string, password string) (string, error)
 }
 
-type authService struct{}
-
-type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
+type authService struct {}
 
 func NewAuthService() AuthService {
 	return &authService{}
 }
 
-func loadConfig() {
-	err := godotenv.Load(".env")
+func (a *authService) Auth(ctx context.Context, username string, password string) (string, error) {
+	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("Error loading .env file")
-		os.Exit(1)
+		return "", err
 	}
-
-	URL := os.Getenv("URL")
-	AUTH_PORT := os.Getenv("AUTH_PORT")
-
-	return URL, AUTH_PORT
-}
-
-func (s *authService) Auth(username string, password string) (string, error) {
-	URL, AUTH_PORT := loadConfig()
-	authURL := URL + ":" + AUTH_PORT + "/auth"
+	log.Printf("Username: %s", username)
+	return username, nil
+	// authUrl := fmt.Sprintf("%s/auth", os.Getenv("AUTH_SERVICE_URL"))
 	
-	creds := Credentials{
-        Username: username,
-        Password: password,
-    }
-
-    credsJson, err := json.Marshal(creds)
-    if err != nil {
-        return "", err
-    }
-
-    resp, err := http.Post(authURL, "application/json", bytes.NewBuffer(credsJson))
-    if err != nil {
-        return "", err
-    }
-    defer resp.Body.Close()
-
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return "", err
-    }
-
-    return string(body), nil
+	// data := map[string]string{
+	// 	"username": username,
+	// 	"password": password,
+	// }
+	
+	// payload, err := json.Marshal(data)
+	// if err != nil {
+	// 	return "", err
+	// }
+	
+	// req, err := http.NewRequest("POST", authUrl, bytes.NewBuffer(payload))
+	// if err != nil {
+	// 	return "", err
+	// }
+	
+	// req.Header.Set("Content-Type", "application/json")
+	
+	// client := &http.Client{}
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	return "", err
+	// }
+	
+	// defer resp.Body.Close()
+	
+	// body, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return "", err
+	// }
+	
+	// var result map[string]interface{}
+	// json.Unmarshal([]byte(body), &result)
+	
+	// return result["token"].(string), nil
 }
