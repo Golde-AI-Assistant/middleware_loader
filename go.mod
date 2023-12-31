@@ -4,8 +4,10 @@ go 1.18
 
 require (
 	github.com/99designs/gqlgen v0.17.41
+	github.com/go-chi/chi v1.5.5
 	github.com/stretchr/testify v1.8.4
 	github.com/vektah/gqlparser/v2 v2.5.10
+	golang.org/x/crypto v0.17.0
 )
 
 require (

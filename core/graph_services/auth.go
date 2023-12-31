@@ -1,4 +1,4 @@
-package service
+package graph_services
 
 import (
 	"context"
@@ -12,12 +12,12 @@ type AuthService interface {
 }
 
 type SigninInput struct {
-	username string
-	password string
+	Username string
+	Password string
 }
 
 func (in SigninInput) Validate() error {
-	if len(in.password) < 1 {
+	if len(in.Password) < 1 {
 		return fmt.Errorf("%w: password is required", enums.ErrValidation)
 	}
 
