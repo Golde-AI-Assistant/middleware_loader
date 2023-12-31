@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -64,13 +64,23 @@ func main() {
 			}
 		`, input.Username, input.Password)
 
-		log.Printf("query: %v", query)
+		// Wrap the query in a JSON object
+		jsonQuery := map[string]string{
+			"query": query,
+		}
+
+		// Encode the JSON object into a buffer
+		var buf bytes.Buffer
+		if err := json.NewEncoder(&buf).Encode(jsonQuery); err != nil {
+			log.Printf("err: %v", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 		//Send the query to the GraphQL server
-		resp, err := http.Post("http://localhost:"+port+"/query", "application/json", strings.NewReader(query))
-		log.Printf("resp: %v", resp)
-		log.Printf("err: %v", err)
+		resp, err := http.Post("http://localhost:4000/query", "application/json", &buf)
 		if err != nil {
+			log.Printf("err: %v", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
