@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"middleware_loader/core/domain/enums"
 	"net/http"
 )
 
@@ -28,7 +29,8 @@ func BaseAPI(url string, method string, input interface{}) (interface{}, error) 
     }
 
 	// map body to Error Response
-	var response ErrorResponse
+	var response enums.ErrorResponse
+
     err = json.Unmarshal(body, &response)
 	if err != nil {
         return nil, fmt.Errorf("unmarshal response: %v", err)
@@ -40,25 +42,17 @@ func BaseAPI(url string, method string, input interface{}) (interface{}, error) 
 	return response.Data, nil
 }
 
-type ErrorResponse struct {
-	Status string
-	StatusMessage    string
-	ErrorCode int
-	ErrorMessage string
-	Data interface{}
-}
-
 func ErrorReturnBlock(statusMessage string, err error) (interface{}, error) {
 	if err != nil {
 		log.Println(statusMessage, err)
-		return ErrorResponse{
+		return enums.ErrorResponse{
 			Status: "Error",
 			StatusMessage:    "Internal Server Error",
 			ErrorCode: 500,
 			ErrorMessage: statusMessage,
 		}, err
 	}
-	return ErrorResponse{
+	return enums.ErrorResponse{
 		Status: "Success",
 		StatusMessage:    "Success",
 		ErrorCode: 200,
