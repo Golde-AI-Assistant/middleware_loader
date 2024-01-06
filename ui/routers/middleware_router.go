@@ -20,4 +20,7 @@ func NewMiddlewareRouter(middlewareService *services.MiddlewareService, r *chi.M
 			controller_services.MicroservicesStatus(w, r, middlewareService)
 		})
 	})
+	return &MiddlewareRouter{
+		MiddlewareService: middlewareService,
+	}
 }
